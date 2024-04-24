@@ -208,6 +208,8 @@ export class PersonModule extends ModuleBase {
    * @param options.firstName The optional first name to use. If not specified a random one will be chosen.
    * @param options.lastName The optional last name to use. If not specified a random one will be chosen.
    * @param options.sex The optional sex to use. Can be either `'female'` or `'male'`.
+   * @param options.minLength The optional minimum length of the full name.
+   * @param options.maxLength The optional maximum length of the full name.
    *
    * @example
    * faker.person.fullName() // 'Allen Brown'
@@ -215,6 +217,7 @@ export class PersonModule extends ModuleBase {
    * faker.person.fullName({ firstName: 'Marcella', sex: 'female' }) // 'Mrs. Marcella Huels'
    * faker.person.fullName({ lastName: 'Beer' }) // 'Mr. Alfonso Beer'
    * faker.person.fullName({ sex: 'male' }) // 'Fernando Schaefer'
+   * faker.person.fullName({ minLength: 5, maxLength: 10 }) // 'Joann Osinski'
    *
    * @since 8.0.0
    */
@@ -238,12 +241,26 @@ export class PersonModule extends ModuleBase {
        * @default faker.helpers.arrayElement(['female', 'male'])
        */
       sex?: SexType;
+      /**
+       * The optional minimum length of the full name.
+       *
+       * @default 0
+       */
+      minLength?: number;
+      /**
+       * The optional maximum length of the full name.
+       *
+       * @default Infinity
+       */
+      maxLength?: number;
     } = {}
   ): string {
     const {
       sex = this.faker.helpers.arrayElement([Sex.Female, Sex.Male]),
       firstName = this.firstName(sex),
       lastName = this.lastName(sex),
+      minLength = 0,
+      maxLength = Number.POSITIVE_INFINITY,
     } = options;
 
     const fullNamePattern: string = this.faker.helpers.weightedArrayElement(
@@ -257,7 +274,14 @@ export class PersonModule extends ModuleBase {
       'person.lastName': () => lastName,
       'person.suffix': () => this.suffix(),
     });
-    return fullName;
+
+    // Trim the full name to the specified length range
+    const trimmedFullName = fullName.substring(
+      0,
+      Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength
+    );
+
+    return trimmedFullName;
   }
 
   /**
