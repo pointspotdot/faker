@@ -882,6 +882,10 @@ export class SimpleHelpersModule extends SimpleModuleBase {
       });
     }
 
+    if (!minLength && !maxLength) {
+      filteredArray = [...array];
+    }
+
     const index =
       filteredArray.length > 1
         ? this.faker.number.int({ max: filteredArray.length - 1 })
