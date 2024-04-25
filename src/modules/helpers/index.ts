@@ -835,6 +835,8 @@ export class SimpleHelpersModule extends SimpleModuleBase {
    * @template T The type of the elements to pick from.
    *
    * @param array The array to pick the value from.
+   * @param minLength the minimum length for name
+   * @param maxLength the maximum length for name
    *
    * @throws If the given array is empty.
    *
@@ -843,7 +845,11 @@ export class SimpleHelpersModule extends SimpleModuleBase {
    *
    * @since 6.3.0
    */
-  arrayElement<const T>(array: ReadonlyArray<T>): T {
+  arrayElement<const T>(
+    array: ReadonlyArray<T>,
+    minLength?: number,
+    maxLength?: number
+  ): T {
     // TODO @xDivisionByZerox 2023-04-20: Remove in v9
     if (array == null) {
       throw new FakerError(
@@ -855,10 +861,33 @@ export class SimpleHelpersModule extends SimpleModuleBase {
       throw new FakerError('Cannot get value from empty dataset.');
     }
 
-    const index =
-      array.length > 1 ? this.faker.number.int({ max: array.length - 1 }) : 0;
+    let filteredArray: string | unknown[] = [];
+    if (minLength) {
+      filteredArray = array.filter((elem) => {
+        if (typeof elem === 'string') {
+          return elem.length >= minLength;
+        }
 
-    return array[index];
+        return true;
+      });
+    }
+
+    if (maxLength) {
+      filteredArray = array.filter((elem) => {
+        if (typeof elem === 'string') {
+          return elem.length <= maxLength;
+        }
+
+        return true;
+      });
+    }
+
+    const index =
+      filteredArray.length > 1
+        ? this.faker.number.int({ max: filteredArray.length - 1 })
+        : 0;
+
+    return filteredArray[index];
   }
 
   /**

@@ -20,6 +20,8 @@ export type SexType = `${Sex}`;
  * @param param2.female Female definitions.
  * @param param2.male Male definitions.
  * @param type Type of the definition.
+ * @param minLength Minimum length for name
+ * @param maxLength Maximum length for name
  *
  * @returns Definition based on given sex.
  */
@@ -32,7 +34,9 @@ function selectDefinition<T>(
     female,
     male,
   }: { generic?: T[] | null; female?: T[] | null; male?: T[] | null },
-  type: string
+  type: string,
+  minLength?: number,
+  maxLength?: number
 ): string {
   let values: T[] | undefined | null;
 
@@ -55,7 +59,7 @@ function selectDefinition<T>(
 
   if (values == null) {
     if (female != null && male != null) {
-      values = faker.helpers.arrayElement([female, male]);
+      values = faker.helpers.arrayElement([female, male], minLength, maxLength);
     } else {
       values = generic;
     }
@@ -92,6 +96,9 @@ export class PersonModule extends ModuleBase {
    * @param sex The optional sex to use.
    * Can be either `'female'` or `'male'`.
    *
+   * @param minLength the minimum length for name
+   * @param maxLength the maximum length for name
+   *
    * @example
    * faker.person.firstName() // 'Antwan'
    * faker.person.firstName('female') // 'Victoria'
@@ -99,7 +106,7 @@ export class PersonModule extends ModuleBase {
    *
    * @since 8.0.0
    */
-  firstName(sex?: SexType): string {
+  firstName(sex?: SexType, minLength?: number, maxLength?: number): string {
     const { first_name, female_first_name, male_first_name } =
       this.faker.rawDefinitions.person ?? {};
 
@@ -112,7 +119,9 @@ export class PersonModule extends ModuleBase {
         female: female_first_name,
         male: male_first_name,
       },
-      'first_name'
+      'first_name',
+      minLength,
+      maxLength
     );
   }
 
@@ -122,6 +131,9 @@ export class PersonModule extends ModuleBase {
    * @param sex The optional sex to use.
    * Can be either `'female'` or `'male'`.
    *
+   * @param minLength the minimum length for name
+   * @param maxLength the maximum length for name
+   *
    * @example
    * faker.person.lastName() // 'Hauck'
    * faker.person.lastName('female') // 'Grady'
@@ -129,7 +141,7 @@ export class PersonModule extends ModuleBase {
    *
    * @since 8.0.0
    */
-  lastName(sex?: SexType): string {
+  lastName(sex?: SexType, minLength?: number, maxLength?: number): string {
     const {
       last_name,
       female_last_name,
@@ -153,7 +165,9 @@ export class PersonModule extends ModuleBase {
           female: female_last_name_pattern,
           male: male_last_name_pattern,
         },
-        'last_name_pattern'
+        'last_name_pattern',
+        minLength,
+        maxLength
       );
       return this.faker.helpers.fake(pattern);
     }
@@ -167,7 +181,9 @@ export class PersonModule extends ModuleBase {
         female: female_last_name,
         male: male_last_name,
       },
-      'last_name'
+      'last_name',
+      minLength,
+      maxLength
     );
   }
 
@@ -177,6 +193,9 @@ export class PersonModule extends ModuleBase {
    * @param sex The optional sex to use.
    * Can be either `'female'` or `'male'`.
    *
+   * @param minLength the minimum length for name
+   * @param maxLength the maximum length for name
+   *
    * @example
    * faker.person.middleName() // 'James'
    * faker.person.middleName('female') // 'Eloise'
@@ -184,7 +203,7 @@ export class PersonModule extends ModuleBase {
    *
    * @since 8.0.0
    */
-  middleName(sex?: SexType): string {
+  middleName(sex?: SexType, minLength?: number, maxLength?: number): string {
     const { middle_name, female_middle_name, male_middle_name } =
       this.faker.rawDefinitions.person ?? {};
 
@@ -197,7 +216,9 @@ export class PersonModule extends ModuleBase {
         female: female_middle_name,
         male: male_middle_name,
       },
-      'middle_name'
+      'middle_name',
+      minLength,
+      maxLength
     );
   }
 
@@ -208,8 +229,8 @@ export class PersonModule extends ModuleBase {
    * @param options.firstName The optional first name to use. If not specified a random one will be chosen.
    * @param options.lastName The optional last name to use. If not specified a random one will be chosen.
    * @param options.sex The optional sex to use. Can be either `'female'` or `'male'`.
-   * @param options.minLength The optional minimum length of the full name.
-   * @param options.maxLength The optional maximum length of the full name.
+   * @param options.minLength the minimum length for name
+   * @param options.maxLength the maximum length for name
    *
    * @example
    * faker.person.fullName() // 'Allen Brown'
@@ -217,7 +238,6 @@ export class PersonModule extends ModuleBase {
    * faker.person.fullName({ firstName: 'Marcella', sex: 'female' }) // 'Mrs. Marcella Huels'
    * faker.person.fullName({ lastName: 'Beer' }) // 'Mr. Alfonso Beer'
    * faker.person.fullName({ sex: 'male' }) // 'Fernando Schaefer'
-   * faker.person.fullName({ minLength: 5, maxLength: 10 }) // 'Joann Osinski'
    *
    * @since 8.0.0
    */
@@ -242,13 +262,13 @@ export class PersonModule extends ModuleBase {
        */
       sex?: SexType;
       /**
-       * The optional minimum length of the full name.
+       * The optional min length of the names to use. If not specified a random one will be chosen.
        *
-       * @default 0
+       * @default 1
        */
       minLength?: number;
       /**
-       * The optional maximum length of the full name.
+       * The optional min length of the names to use. If not specified a random one will be chosen.
        *
        * @default Infinity
        */
@@ -257,10 +277,8 @@ export class PersonModule extends ModuleBase {
   ): string {
     const {
       sex = this.faker.helpers.arrayElement([Sex.Female, Sex.Male]),
-      firstName = this.firstName(sex),
-      lastName = this.lastName(sex),
-      minLength = 0,
-      maxLength = Number.POSITIVE_INFINITY,
+      firstName = this.firstName(sex, options.minLength, options.maxLength),
+      lastName = this.lastName(sex, options.minLength, options.maxLength),
     } = options;
 
     const fullNamePattern: string = this.faker.helpers.weightedArrayElement(
@@ -270,18 +288,12 @@ export class PersonModule extends ModuleBase {
     const fullName = this.faker.helpers.mustache(fullNamePattern, {
       'person.prefix': () => this.prefix(sex),
       'person.firstName': () => firstName,
-      'person.middleName': () => this.middleName(sex),
+      'person.middleName': () => this.middleName(sex, options.minLength, options.maxLength),
       'person.lastName': () => lastName,
       'person.suffix': () => this.suffix(),
     });
 
-    // Trim the full name to the specified length range
-    const trimmedFullName = fullName.substring(
-      0,
-      Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength
-    );
-
-    return trimmedFullName;
+    return fullName;
   }
 
   /**
