@@ -861,7 +861,7 @@ export class SimpleHelpersModule extends SimpleModuleBase {
       throw new FakerError('Cannot get value from empty dataset.');
     }
 
-    let filteredArray: string | unknown[] = [];
+    let filteredArray: T[] = [];
     if (minLength) {
       filteredArray = array.filter((elem) => {
         if (typeof elem === 'string') {

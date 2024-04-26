@@ -95,7 +95,6 @@ export class PersonModule extends ModuleBase {
    *
    * @param sex The optional sex to use.
    * Can be either `'female'` or `'male'`.
-   *
    * @param minLength the minimum length for name
    * @param maxLength the maximum length for name
    *
@@ -130,7 +129,6 @@ export class PersonModule extends ModuleBase {
    *
    * @param sex The optional sex to use.
    * Can be either `'female'` or `'male'`.
-   *
    * @param minLength the minimum length for name
    * @param maxLength the maximum length for name
    *
@@ -192,7 +190,6 @@ export class PersonModule extends ModuleBase {
    *
    * @param sex The optional sex to use.
    * Can be either `'female'` or `'male'`.
-   *
    * @param minLength the minimum length for name
    * @param maxLength the maximum length for name
    *
@@ -288,7 +285,8 @@ export class PersonModule extends ModuleBase {
     const fullName = this.faker.helpers.mustache(fullNamePattern, {
       'person.prefix': () => this.prefix(sex),
       'person.firstName': () => firstName,
-      'person.middleName': () => this.middleName(sex, options.minLength, options.maxLength),
+      'person.middleName': () =>
+        this.middleName(sex, options.minLength, options.maxLength),
       'person.lastName': () => lastName,
       'person.suffix': () => this.suffix(),
     });
