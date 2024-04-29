@@ -609,6 +609,14 @@ export class LocationModule extends ModuleBase {
     );
   }
 
+  /**
+   * Returns a random complete Address.
+   *
+   * @example
+   * faker.location.fullAddress() // '53937 Windler Cape Apt. 602, Lake, Strongsville, PA, Poland'
+   *
+   * @since 8.0.0
+   */
   fullAddress(): string {
     const { full_address } = this.faker.definitions.location;
 

@@ -134,6 +134,8 @@ describe('location', () => {
       // .it('with state option', { state: 'CA' })
       // .it('with options', { state: 'CA', format: '###-###' });
     });
+
+    t.it('fullAddress');
   });
 
   describe.each(times(NON_SEEDED_BASED_RUN).map(() => faker.seed()))(
